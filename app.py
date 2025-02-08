@@ -5,7 +5,7 @@ import os
 app = Flask(__name__)
 DATA_FILE = "data.json"
 
-# Load stored data
+
 def load_data():
     if not os.path.exists(DATA_FILE):
         return []
@@ -15,14 +15,14 @@ def load_data():
     except json.JSONDecodeError:
         return []
 
-# Save data (append new entry)
+
 def save_data(data):
     received_data = load_data()
     received_data.append(data)  # Append new data
     with open(DATA_FILE, "w") as file:
         json.dump(received_data, file)
 
-# Receive data from Website 1
+
 @app.route('/receive', methods=['POST'])
 def receive_data():
     data = request.get_json()
@@ -31,7 +31,7 @@ def receive_data():
         return jsonify({"message": "Data received successfully!"}), 200
     return jsonify({"error": "Invalid data"}), 400
 
-# Display only the most recent received data
+
 @app.route('/display', methods=['GET'])
 def display_data():
     received_data = load_data()
