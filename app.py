@@ -1,21 +1,36 @@
-import logging
+import os
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-# Enable logging
-logging.basicConfig(level=logging.DEBUG)
+# In-memory storage (resets when the server restarts)
+received_data = []
 
 @app.route('/receive', methods=['POST'])
 def receive_data():
-    try:
-        data = request.get_json()
-        if not data:
-            raise ValueError("Invalid data received")
-        return jsonify({"message": "Data received successfully!"}), 200
-    except Exception as e:
-        app.logger.error(f"Error processing request: {e}")
-        return jsonify({"error": str(e)}), 500  # Return a proper error message
+    data = request.get_json()
+    if data:
+        received_data.append(data)
+        return jsonify({"message": "✅ Data received successfully!"}), 200
+    return jsonify({"error": "❌ Invalid data"}), 400
+
+@app.route('/display', methods=['GET'])
+def display_data():
+    if not received_data:
+        return "<h1>No data received yet.</h1>"
+
+    last_entry = received_data[-1]
+
+    return f"""
+        <h1>Received Data</h1>
+        <p><strong>Name:</strong> {last_entry.get('name', 'N/A')}<br> 
+        <strong>Email:</strong> {last_entry.get('email', 'N/A')}<br>
+        <strong>Mobile:</strong> {last_entry.get('mobile', 'N/A')}<br>
+        <strong>Roll Number:</strong> {last_entry.get('rollno', 'N/A')}<br>
+        <strong>Branch:</strong> {last_entry.get('branch', 'N/A')}<br>
+        <strong>Message:</strong> {last_entry.get('message', 'N/A')}</p>
+    """
 
 if __name__ == '__main__':
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 10000))  # Default to 10000
+    app.run(host="0.0.0.0", port=port, debug=False)  # Debug mode OFF for production
