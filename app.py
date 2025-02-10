@@ -20,7 +20,7 @@ def save_data(data):
     received_data = load_data()
     received_data.append(data)  # Append new data
     with open(DATA_FILE, "w") as file:
-        json.dump(received_data, file)
+        json.dump(received_data, file, indent=4)
 
 
 @app.route('/receive', methods=['POST'])
@@ -46,6 +46,7 @@ def display_data():
     result += f"<p>Name: {last_entry.get('name', 'N/A')}<br> Email: {last_entry.get('email', 'N/A')}</p>"
 
     return result
+
 
 if __name__ == '__main__':
     app.run(debug=True)
