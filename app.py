@@ -1,31 +1,21 @@
+import logging
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-# Store received data in memory (temporary)
-received_data = []
+# Enable logging
+logging.basicConfig(level=logging.DEBUG)
 
 @app.route('/receive', methods=['POST'])
 def receive_data():
-    data = request.get_json()
-    if data:
-        received_data.append(data)
+    try:
+        data = request.get_json()
+        if not data:
+            raise ValueError("Invalid data received")
         return jsonify({"message": "Data received successfully!"}), 200
-    return jsonify({"error": "Invalid data"}), 400
-
-@app.route('/display', methods=['GET'])
-def display_data():
-    if not received_data:
-        return "<h1>No data received yet.</h1>"
-
-    last_entry = received_data[-1]
-
-    return f"""
-        <h1>Received Data</h1>
-        <p><strong>Name:</strong> {last_entry.get('name', 'N/A')}<br> 
-        <strong>Email:</strong> {last_entry.get('email', 'N/A')}</p>
-    """
+    except Exception as e:
+        app.logger.error(f"Error processing request: {e}")
+        return jsonify({"error": str(e)}), 500  # Return a proper error message
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 10000))  # Set port dynamically
-    app.run(debug=False, host="0.0.0.0", port=port)
+    app.run(debug=True, host="0.0.0.0", port=5000)
