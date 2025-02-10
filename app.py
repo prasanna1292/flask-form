@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-# In-memory storage
+# Store received data in memory (temporary)
 received_data = []
 
 @app.route('/receive', methods=['POST'])
@@ -22,13 +22,10 @@ def display_data():
 
     return f"""
         <h1>Received Data</h1>
-        <p><strong>Name:</strong> {last_entry.get('name', 'N/A')}<br>
-        <strong>Mobile:</strong> {last_entry.get('mobile', 'N/A')}<br>
-        <strong>Email:</strong> {last_entry.get('email', 'N/A')}<br>
-        <strong>Roll Number:</strong> {last_entry.get('rollno', 'N/A')}<br>
-        <strong>Branch:</strong> {last_entry.get('branch', 'N/A')}<br>
-        <strong>Message:</strong> {last_entry.get('message', 'N/A')}</p>
+        <p><strong>Name:</strong> {last_entry.get('name', 'N/A')}<br> 
+        <strong>Email:</strong> {last_entry.get('email', 'N/A')}</p>
     """
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 10000))  # Set port dynamically
+    app.run(debug=False, host="0.0.0.0", port=port)
